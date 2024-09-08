@@ -27,8 +27,6 @@ public class StudentServlet extends HttpServlet {
 
     @EJB
     private StudentFacadeLocal studentFacade;
-    
-    
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -44,32 +42,56 @@ public class StudentServlet extends HttpServlet {
         response.setContentType("text/html;charset=UTF-8");
         String action = request.getParameter("action");
         String idStr = request.getParameter("studentId");
-        Integer id = new Integer(idStr);
+        int studentId = 0;
+        if (idStr != null && !idStr.equals("")) {
+            studentId = Integer.parseInt(idStr);
+        }
         String firstname = request.getParameter("firstName");
         String lastname = request.getParameter("lastName");
         String yearLevelStr = request.getParameter("yearLevel");
-        Integer yearLevel = new Integer(yearLevelStr);
-        Student estudiante = new Student(id, firstname, lastname, yearLevel);
-        studentFacade.create(estudiante);
-        
-        List estudiantes = new ArrayList();
-        estudiantes = studentFacade.findAll();
-        
-        request.setAttribute("stud", estudiante);
-        request.setAttribute("allStudents", estudiantes = studentFacade.findAll());
-        request.getRequestDispatcher("StudentInfo.jsp").forward(request, response);
-        
-       
-        
+        int yearLevel = 0;
+        if (yearLevelStr != null && !yearLevelStr.equals("")) {
+            yearLevel = Integer.parseInt(yearLevelStr);
+        }
+        Student estudiante = new Student(studentId, firstname, lastname, yearLevel);
+
+        if ("Add".equalsIgnoreCase(action)) {
+            studentFacade.create(estudiante);
+        } else if ("Edit".equalsIgnoreCase(action)) {
+            studentFacade.edit(estudiante);
+        } else if ("Delete".equalsIgnoreCase(action)) {
+            studentFacade.remove(estudiante);
+        } else if ("Search".equalsIgnoreCase(action)) {
+            estudiante = studentFacade.find(studentId);
+            List<Student> estudiantes = new ArrayList<>();
+            if (estudiante != null) {
+                estudiantes.add(estudiante);
+            }
+            request.setAttribute("stud", estudiante);
+            request.setAttribute("allStudents", estudiantes);
+            request.getRequestDispatcher("studentInfo.jsp").forward(request, response);
+            return;
+        } else if ("See Table".equalsIgnoreCase(action)) {
+            List estudiantes = new ArrayList();
+            estudiantes = studentFacade.findAll();
+            request.setAttribute("stud", estudiante);
+            request.setAttribute("allStudents", estudiantes);
+            request.getRequestDispatcher("studentInfo.jsp").forward(request, response);
+        }
+        List<Student> estudiantes = studentFacade.findAll();
+            request.setAttribute("stud", estudiante);
+            request.setAttribute("allStudents", estudiantes);
+            request.getRequestDispatcher("studentInfo.jsp").forward(request, response);
+
         try (PrintWriter out = response.getWriter()) {
             /* TODO output your page here. You may use following sample code. */
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet StudentServlet</title>");            
+            out.println("<title>Servlet StudentServlet</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet StudentServlet at "+ action + " "+ idStr + " " +firstname+ " " + lastname + "</h1>");
+            out.println("<h1>Servlet StudentServlet at " + action + " " + idStr + " " + firstname + " " + lastname + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
