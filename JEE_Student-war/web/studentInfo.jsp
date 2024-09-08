@@ -30,7 +30,7 @@
 </tr>
 <tr>
 <td>Year Level</td>
-<td><input type="text" name="yearLevel" value="${student.yearlevel}" /></td>
+<td><input type="text" name="yearLevel hola" value="${student.yearlevel}" /></td>
 </tr>
 <tr>
 <td colspan="2">
